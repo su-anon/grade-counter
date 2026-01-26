@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC GPA Grade Counter</title>
+    <style>
+* { box-sizing: border-box; }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6; /* Your desired background color */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }        h2 { color: #2c3e50; text-align: center; margin-bottom: 1.5rem; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 1rem; }
+    input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 2px solid #ddd;
+            border-radius: 6px;
+            outline: none;
+        }
+        input:focus { border-color: #27ae60; }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-add { background-color: #27ae60; color: white; }
+        .btn-add:hover { background-color: #219150; }
+        .btn-done { background-color: #2980b9; color: white; width: 100%; margin-top: 10px; }
+        .btn-done:hover { background-color: #1f6391; }
+        
+        #list-container {
+            margin-top: 1.5rem;
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+        }
+        .grade-item {
+            display: inline-block;
+            background: #ecf0f1;
+            padding: 5px 12px;
+            margin: 4px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        #results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            display: none;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .result-row:last-child { border-bottom: none; }
+        .badge { font-weight: bold; color: #27ae60; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>SSC Grade Counter</h2>
+    
+    <div class="input-group">
+        <input type="number" id="gpaInput" placeholder="Enter GPA (e.g. 3.25)" step="0.01" min="0" max="5">
+        <button class="btn-add" onclick="addGPA()">Add</button>
+    </div>
+
+    <div id="list-container">
+        <strong>Entered GPAs:</strong>
+        <div id="gpaList"></div>
+    </div>
+
+    <button class="btn-done" onclick="showResults()">Done & Calculate</button>
+
+    <div id="results">
+        <h3>Grade Summary</h3>
+        <div id="summaryContent"></div>
+    </div>
+</div>
+
+<script>
+    let gpaArray = [];
+
+    function addGPA() {
+        const input = document.getElementById('gpaInput');
+        const val = parseFloat(input.value);
+
+        if (isNaN(val) || val < 0 || val > 5) {
+            alert("Please enter a valid GPA between 0 and 5.00");
+            return;
+        }
+
+        gpaArray.push(val);
+        
+        // Update UI list
+        const list = document.getElementById('gpaList');
+        const item = document.createElement('span');
+        item.className = 'grade-item';
+        item.innerText = val.toFixed(2);
+        list.appendChild(item);
+
+        input.value = '';
+        input.focus();
+    }
+
+    function getGrade(point) {
+        if (point >= 5.0) return "A+";
+        if (point >= 4.0) return "A";
+        if (point >= 3.5) return "A-";
+        if (point >= 3.0) return "B";
+        if (point >= 2.0) return "C";
+        if (point >= 1.0) return "D";
+        return "F";
+    }
+
+    function showResults() {
+        if (gpaArray.length === 0) {
+            alert("Add some GPAs first!");
+            return;
+        }
+
+        const counts = { "A+": 0, "A": 0, "A-": 0, "B": 0, "C": 0, "D": 0, "F": 0 };
+        
+        gpaArray.forEach(gpa => {
+            const grade = getGrade(gpa);
+            counts[grade]++;
+        });
+
+        const summaryDiv = document.getElementById('summaryContent');
+        summaryDiv.innerHTML = '';
+
+        for (const [grade, count] of Object.entries(counts)) {
+            if (count > 0) {
+                summaryDiv.innerHTML += `
+                    <div class="result-row">
+                        <span>Grade <strong>${grade}</strong></span>
+                        <span class="badge">${count} student(s)</span>
+                    </div>
+                `;
+            }
+        }
+
+        document.getElementById('results').style.display = 'block';
+    }
+
+    // Allow "Enter" key to add GPA
+    document.getElementById('gpaInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            addGPA();
+        }
+    });
+</script>
+
+</body>
+</html>
