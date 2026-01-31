@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SSC GPA Grade Counter</title>
     <style>
-* { box-sizing: border-box; }
+        * { box-sizing: border-box; }
 
-    html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-    }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6; /* Your desired background color */
+            background-color: #f4f7f6;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -29,58 +29,140 @@
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 450px;
-        }        h2 { color: #2c3e50; text-align: center; margin-bottom: 1.5rem; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 1rem; }
-    input {
-        flex-grow: 1;
-        padding: 10px;
-        border: 2px solid #ddd;
+            max-width: 600px;
+        }
+
+        h2 { color: #2c3e50; text-align: center; margin-bottom: 1.5rem; }
+
+        .input-group { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
+        
+        input {
+            flex-grow: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
             border-radius: 6px;
             outline: none;
+            font-size: 1rem;
+            min-width: 120px;
         }
-        input:focus { border-color: #27ae60; }
+        input:focus { border-color: #2c3e50; }
+
         button {
             padding: 10px 20px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.3s;
+            transition: 0.2s;
+            color: white;
+            font-size: 0.9rem;
         }
-        .btn-add { background-color: #27ae60; color: white; }
-        .btn-add:hover { background-color: #219150; }
-        .btn-done { background-color: #2980b9; color: white; width: 100%; margin-top: 10px; }
-        .btn-done:hover { background-color: #1f6391; }
         
+        button:active { transform: scale(0.98); }
+
+        .btn-male { background-color: #3498db; }
+        .btn-male:hover { background-color: #2980b9; }
+
+        .btn-female { background-color: #e91e63; }
+        .btn-female:hover { background-color: #c2185b; }
+
         #list-container {
             margin-top: 1.5rem;
             border-top: 1px solid #eee;
             padding-top: 1rem;
+            min-height: 60px;
         }
+
         .grade-item {
-            display: inline-block;
-            background: #ecf0f1;
-            padding: 5px 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 14px;
             margin: 4px;
             border-radius: 20px;
             font-size: 0.9rem;
+            cursor: pointer;
+            user-select: none;
+            border: 2px solid transparent;
+            transition: all 0.2s;
         }
-        #results {
-            margin-top: 20px;
+
+        .grade-item.male { background: #eaf6fd; color: #2980b9; border: 1px solid #abd9f7; }
+        .grade-item.female { background: #fdeaf1; color: #c2185b; border: 1px solid #f8bbd0; }
+
+        .grade-item.selected {
+            background-color: #e74c3c !important;
+            color: white !important;
+            border-color: #c0392b !important;
+            transform: scale(1.05);
+            box-shadow: 0 2px 5px rgba(231, 76, 60, 0.4);
+        }
+
+        #edit-controls {
+            display: none;
+            background: #fff0f0;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ffcccc;
+        }
+        
+        .btn-delete { background-color: #e74c3c; padding: 8px 15px; font-size: 0.85rem; }
+        .btn-delete:hover { background-color: #c0392b; }
+
+        .btn-clear { background-color: #95a5a6; padding: 8px 15px; font-size: 0.85rem; }
+        .btn-clear:hover { background-color: #7f8c8d; }
+
+        .btn-done { 
+            background-color: #2c3e50; 
+            width: 100%; 
+            margin-top: 20px; 
             padding: 15px;
+            font-size: 1.1rem;
+        }
+        .btn-done:hover { background-color: #1a252f; }
+
+        #results {
+            margin-top: 30px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .summary-card {
             background: #f9f9f9;
             border-radius: 8px;
-            display: none;
+            padding: 15px;
+            border-top: 4px solid #ccc;
         }
+
+        .summary-card.total { border-color: #27ae60; }
+        .summary-card.male { border-color: #3498db; }
+        .summary-card.female { border-color: #e91e63; }
+
+        .summary-card h4 { margin: 0 0 10px 0; text-align: center; font-size: 1rem; color: #555; }
+        
         .result-row {
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
+            padding: 4px 0;
+            font-size: 0.9rem;
             border-bottom: 1px solid #eee;
         }
         .result-row:last-child { border-bottom: none; }
-        .badge { font-weight: bold; color: #27ae60; }
+        .badge { font-weight: bold; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -90,26 +172,52 @@
     
     <div class="input-group">
         <input type="number" id="gpaInput" placeholder="Enter GPA (e.g. 3.25)" step="0.01" min="0" max="5">
-        <button class="btn-add" onclick="addGPA()">Add</button>
+        <button class="btn-male" onclick="addGPA('M')">Add Male ♂</button>
+        <button class="btn-female" onclick="addGPA('F')">Add Female ♀</button>
     </div>
 
     <div id="list-container">
-        <strong>Entered GPAs:</strong>
-        <div id="gpaList"></div>
+        <strong>Entered Grades:</strong> <span style="font-size: 0.85rem; color: #777;">(Click item to select)</span>
+        <div id="gpaList" style="margin-top: 10px;"></div>
     </div>
 
-    <button class="btn-done" onclick="showResults()">Done & Calculate</button>
+    <div id="edit-controls">
+        <span style="color: #c0392b; font-weight: bold; font-size: 0.9rem;">Items Selected</span>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-clear" onclick="clearSelection()">Cancel</button>
+            <button class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
+        </div>
+    </div>
+
+    <button class="btn-done" onclick="showResults()">Calculate Results</button>
 
     <div id="results">
-        <h3>Grade Summary</h3>
-        <div id="summaryContent"></div>
+        <h3 style="text-align: center; color: #333; margin-bottom: 20px;">Summary Report</h3>
+        <div class="summary-grid">
+            
+            <div class="summary-card total">
+                <h4>Total (All)</h4>
+                <div id="totalContent"></div>
+            </div>
+
+            <div class="summary-card male">
+                <h4>Male Results</h4>
+                <div id="maleContent"></div>
+            </div>
+
+            <div class="summary-card female">
+                <h4>Female Results</h4>
+                <div id="femaleContent"></div>
+            </div>
+
+        </div>
     </div>
 </div>
 
 <script>
-    let gpaArray = [];
+    let entries = [];
 
-    function addGPA() {
+    function addGPA(gender) {
         const input = document.getElementById('gpaInput');
         const val = parseFloat(input.value);
 
@@ -118,17 +226,66 @@
             return;
         }
 
-        gpaArray.push(val);
-        
-        // Update UI list
-        const list = document.getElementById('gpaList');
-        const item = document.createElement('span');
-        item.className = 'grade-item';
-        item.innerText = val.toFixed(2);
-        list.appendChild(item);
+        const newEntry = {
+            id: Date.now(),
+            value: val,
+            gender: gender,
+            selected: false
+        };
 
+        entries.push(newEntry);
+        
         input.value = '';
         input.focus();
+        renderList();
+        
+        document.getElementById('results').style.display = 'none';
+    }
+
+    function renderList() {
+        const listDiv = document.getElementById('gpaList');
+        const editControls = document.getElementById('edit-controls');
+        listDiv.innerHTML = '';
+
+        let hasSelection = false;
+
+        entries.forEach(entry => {
+            const span = document.createElement('span');
+            let classes = 'grade-item';
+            classes += (entry.gender === 'M') ? ' male' : ' female';
+            if (entry.selected) {
+                classes += ' selected';
+                hasSelection = true;
+            }
+
+            span.className = classes;
+            span.innerText = entry.value.toFixed(2);
+            
+            span.onclick = () => toggleSelection(entry.id);
+            
+            listDiv.appendChild(span);
+        });
+
+        editControls.style.display = hasSelection ? 'flex' : 'none';
+    }
+
+    function toggleSelection(id) {
+        const item = entries.find(e => e.id === id);
+        if (item) {
+            item.selected = !item.selected;
+            renderList();
+        }
+    }
+
+    function clearSelection() {
+        entries.forEach(e => e.selected = false);
+        renderList();
+    }
+
+    function deleteSelected() {
+        entries = entries.filter(e => !e.selected);
+        renderList();
+        document.getElementById('results').style.display = 'none';
     }
 
     function getGrade(point) {
@@ -141,40 +298,57 @@
         return "F";
     }
 
-    function showResults() {
-        if (gpaArray.length === 0) {
-            alert("Add some GPAs first!");
-            return;
-        }
+    function generateSummaryHTML(dataArray) {
+        if (dataArray.length === 0) return '<div style="text-align:center; color:#999; font-size:0.8rem;">No Data</div>';
 
         const counts = { "A+": 0, "A": 0, "A-": 0, "B": 0, "C": 0, "D": 0, "F": 0 };
         
-        gpaArray.forEach(gpa => {
-            const grade = getGrade(gpa);
+        dataArray.forEach(item => {
+            const grade = getGrade(item.value);
             counts[grade]++;
         });
 
-        const summaryDiv = document.getElementById('summaryContent');
-        summaryDiv.innerHTML = '';
-
+        let html = '';
+        let totalCount = 0;
+        
         for (const [grade, count] of Object.entries(counts)) {
             if (count > 0) {
-                summaryDiv.innerHTML += `
+                html += `
                     <div class="result-row">
-                        <span>Grade <strong>${grade}</strong></span>
-                        <span class="badge">${count} student(s)</span>
+                        <span>${grade}</span>
+                        <span class="badge">${count}</span>
                     </div>
                 `;
+                totalCount += count;
             }
         }
-
-        document.getElementById('results').style.display = 'block';
+        
+        html += `<div style="margin-top:8px; padding-top:5px; border-top:2px dashed #ddd; font-weight:bold; font-size:0.85rem; text-align:right;">Total: ${totalCount}</div>`;
+        
+        return html;
     }
 
-    // Allow "Enter" key to add GPA
+    function showResults() {
+        if (entries.length === 0) {
+            alert("Please add some student GPAs first!");
+            return;
+        }
+
+        const maleEntries = entries.filter(e => e.gender === 'M');
+        const femaleEntries = entries.filter(e => e.gender === 'F');
+
+        document.getElementById('totalContent').innerHTML = generateSummaryHTML(entries);
+        document.getElementById('maleContent').innerHTML = generateSummaryHTML(maleEntries);
+        document.getElementById('femaleContent').innerHTML = generateSummaryHTML(femaleEntries);
+
+        document.getElementById('results').style.display = 'block';
+        
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+
     document.getElementById('gpaInput').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
-            addGPA();
+            e.preventDefault(); 
         }
     });
 </script>
