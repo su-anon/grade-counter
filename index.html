@@ -107,6 +107,8 @@
             justify-content: space-between;
             align-items: center;
             border: 1px solid #ffcccc;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .btn-delete { background-color: #e74c3c; padding: 8px 15px; font-size: 0.85rem; }
@@ -163,6 +165,18 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; align-items: flex-start; }
+            .container { padding: 1.5rem; width: 100%; }
+            .input-group { flex-direction: column; }
+            input { width: 100%; }
+            .btn-male, .btn-female { width: 100%; padding: 12px; }
+            .summary-grid { grid-template-columns: 1fr; }
+            #edit-controls { flex-direction: column; text-align: center; }
+            #edit-controls div { width: 100%; display: flex; justify-content: center; }
+            .btn-delete, .btn-clear { flex-grow: 1; }
+        }
     </style>
 </head>
 <body>
@@ -172,8 +186,10 @@
     
     <div class="input-group">
         <input type="number" id="gpaInput" placeholder="Enter GPA (e.g. 3.25)" step="0.01" min="0" max="5">
-        <button class="btn-male" onclick="addGPA('M')">Add Male ♂</button>
-        <button class="btn-female" onclick="addGPA('F')">Add Female ♀</button>
+        <div style="display: flex; gap: 10px; flex-grow: 1;">
+            <button class="btn-male" style="flex-grow: 1;" onclick="addGPA('M')">Add Male ♂</button>
+            <button class="btn-female" style="flex-grow: 1;" onclick="addGPA('F')">Add Female ♀</button>
+        </div>
     </div>
 
     <div id="list-container">
@@ -183,7 +199,7 @@
 
     <div id="edit-controls">
         <span style="color: #c0392b; font-weight: bold; font-size: 0.9rem;">Items Selected</span>
-        <div style="display: flex; gap: 10px;">
+        <div>
             <button class="btn-clear" onclick="clearSelection()">Cancel</button>
             <button class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
         </div>
